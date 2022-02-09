@@ -122,6 +122,8 @@ defmodule PlateSlate.Menu do
 
   """
   def list_items(args) do
+    IO.puts("These are our aguments: #{inspect(args)}")
+
     args
     |> Enum.reduce(Item, fn
       {:order, order}, query ->
@@ -143,6 +145,12 @@ defmodule PlateSlate.Menu do
 
       {:priced_below, price}, query ->
         from q in query, where: q.price <= ^price
+
+      {:added_after, date}, query ->
+        from q in query, where: q.added_on >= ^date
+
+      {:added_before, date}, query ->
+        from q in query, where: q.added_on <= ^date
 
       {:category, category_name}, query ->
         from q in query,

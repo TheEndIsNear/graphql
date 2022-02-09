@@ -26,7 +26,8 @@ defmodule PlateSlateWeb.ConnCase do
   using do
     quote do
       # Import conveniences for testing with connections
-      use Phoenix.ConnTest
+      import Plug.Conn
+      import Phoenix.ConnTest
       import PlateSlateWeb.Router.Helpers
 
       # The default endpoint for testing

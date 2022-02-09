@@ -7,7 +7,9 @@
 # Visit http://www.pragmaticprogrammer.com/titles/wwgraphql for more book information.
 # ---
 defmodule PlateSlate.Repo do
-  use Ecto.Repo, otp_app: :plate_slate
+  use Ecto.Repo,
+    otp_app: :plate_slate,
+    adapter: Ecto.Adapters.Postgres
 
   @doc """
   Dynamically loads the repository url from the
