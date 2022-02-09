@@ -21,35 +21,52 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
              %{
                "data" => %{
                  "menuItems" => [
-                   %{"name" => "Reuben"},
-                   %{"name" => "Croque Monsieur"},
-                   %{"name" => "Muffuletta"},
                    %{"name" => "Bánh mì"},
-                   %{"name" => "Vada Pav"},
+                   %{"name" => "Chocolate Milkshake"},
+                   %{"name" => "Croque Monsieur"},
                    %{"name" => "French Fries"},
-                   %{"name" => "Papadum"},
-                   %{"name" => "Pasta Salad"},
-                   %{"name" => "Water"},
-                   %{"name" => "Soft Drink"},
                    %{"name" => "Lemonade"},
                    %{"name" => "Masala Chai"},
+                   %{"name" => "Muffuletta"},
+                   %{"name" => "Papadum"},
+                   %{"name" => "Pasta Salad"},
+                   %{"name" => "Reuben"},
+                   %{"name" => "Soft Drink"},
+                   %{"name" => "Vada Pav"},
                    %{"name" => "Vanilla Milkshake"},
-                   %{"name" => "Chocolate Milkshake"}
+                   %{"name" => "Water"}
                  ]
                }
              }
   end
 
   @query """
-  {
-    menuItems(matching: "reu") {
+  query ($order: SortOrder!){
+    menuItems(order: $order) {
       name
     }
   }
   """
+  @variables %{"order" => "DESC"}
 
+  test "menuItems field returns items descending using literals" do
+    response = get(build_conn(), "/api", query: @query, variables: @variables)
+
+    assert %{
+             "data" => %{"menuItems" => [%{"name" => "Water"} | _]}
+           } = json_response(response, 200)
+  end
+
+  @query """
+  query ($term: String) {
+    menuItems(filter: {name: $term}) {
+      name
+    }
+  }
+  """
+  @variables %{"term" => "reu"}
   test "menuItems field returns menu items filtered by name" do
-    response = get(build_conn(), "/api", query: @query)
+    response = get(build_conn(), "/api", query: @query, variables: @variables)
 
     assert json_response(response, 200) == %{
              "data" => %{
@@ -62,7 +79,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
 
   @query """
   {
-    menuItems(matching: 123) {
+    menuItems(filter: {name: 123}) {
       name
     }
   }
@@ -77,6 +94,23 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
              ]
            } = json_response(response, 200)
 
-    assert message == "Argument \"matching\" has invalid value 123."
+    assert message ==
+             "Argument \"filter\" has invalid value {name: 123}.\nIn field \"name\": Expected type \"String\", found 123."
+  end
+
+  @query """
+  query ($filter: MenuItemFilter!) {
+    menuItems(filter: $filter) {
+      name
+    }
+  }
+  """
+  @variables %{filter: %{"tag" => "Vegetarian", "category" => "Sandwiches"}}
+  test "menuItems field returns menuItems, fitlering with a literal" do
+    response = get(build_conn(), "/api", query: @query, variables: @variables)
+
+    assert %{
+             "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]}
+           } == json_response(response, 200)
   end
 end
