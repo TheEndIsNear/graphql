@@ -122,8 +122,6 @@ defmodule PlateSlate.Menu do
 
   """
   def list_items(args) do
-    IO.puts("These are our aguments: #{inspect(args)}")
-
     args
     |> Enum.reduce(Item, fn
       {:order, order}, query ->
