@@ -21,6 +21,14 @@ defmodule PlateSlateWeb.Schema do
     import_fields :place_order_mutation
   end
 
+  subscription do
+    field :new_order, :order do
+      config fn _args, _info ->
+        {:ok, topic: "*"}
+      end
+    end
+  end
+
   enum :sort_order do
     value :asc
     value :desc
