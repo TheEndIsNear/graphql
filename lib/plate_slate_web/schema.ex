@@ -18,6 +18,7 @@ defmodule PlateSlateWeb.Schema do
 
   mutation do
     import_fields :menu_item_mutation
+    import_fields :place_order_mutation
   end
 
   enum :sort_order do

@@ -27,6 +27,16 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :category_id, non_null(:id)
   end
 
+  input_object :order_item_input do
+    field :menu_item_id, non_null(:id)
+    field :quantity, non_null(:integer)
+  end
+
+  input_object :place_order_input do
+    field :customer_number, :integer
+    field :items, non_null(list_of(non_null(:order_item_input)))
+  end
+
   object :menu_item do
     interfaces [:search_result]
     field :id, :id
@@ -35,6 +45,23 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :price, :decimal
     field :category, :category
     field :added_on, :date
+  end
+
+  object :order_result do
+    field :order, :order
+    field :errors, list_of(:input_error)
+  end
+
+  object :order do
+    field :id, :id
+    field :customer_number, :integer
+    field :items, list_of(:order_item)
+    field :state, :string
+  end
+
+  object :order_item do
+    field :name, :string
+    field :quantity, :integer
   end
 
   object :menu_queries do
@@ -82,6 +109,13 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :create_menu_item, :menu_item_result do
       arg :input, non_null(:menu_item_input)
       resolve &Resolvers.Menu.create_item/3
+    end
+  end
+
+  object :place_order_mutation do
+    field :place_order, :order_result do
+      arg :input, non_null(:place_order_input)
+      resolve &Resolvers.Ordering.place_order/3
     end
   end
 
