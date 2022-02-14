@@ -19,12 +19,36 @@ defmodule PlateSlateWeb.Schema do
   mutation do
     import_fields :menu_item_mutation
     import_fields :place_order_mutation
+    import_fields :ready_order_mutation
+    import_fields :complete_order_mutation
   end
 
   subscription do
     field :new_order, :order do
       config fn _args, _info ->
         {:ok, topic: "*"}
+      end
+
+      resolve fn root, _, _ ->
+        {:ok, root}
+      end
+    end
+
+    field :update_order, :order do
+      arg :id, non_null(:id)
+
+      config fn args, _info ->
+        {:ok, topic: args.id}
+      end
+
+      trigger [:ready_order, :complete_oder],
+        topic: fn
+          %{order: order} -> [order.id]
+          _ -> []
+        end
+
+      resolve fn %{order: order}, _, _ ->
+        {:ok, order}
       end
     end
   end

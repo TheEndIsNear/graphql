@@ -119,6 +119,20 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     end
   end
 
+  object :ready_order_mutation do
+    field :ready_order, :order_result do
+      arg :id, non_null(:id)
+      resolve &Resolvers.Ordering.ready_order/3
+    end
+  end
+
+  object :complete_order_mutation do
+    field :complete_order, :order_result do
+      arg :id, non_null(:id)
+      resolve &Resolvers.Ordering.complete_order/3
+    end
+  end
+
   object :menu_item_result do
     field :menu_item, :menu_item
     field :errors, list_of(:input_error)
