@@ -29,8 +29,11 @@ defmodule PlateSlateWeb.Schema do
         {:ok, topic: "*"}
       end
 
-      resolve fn root, _, _ ->
-        {:ok, root}
+      trigger :place_order,
+        topic: fn _topic -> ["*"] end
+
+      resolve fn root = %{order: order}, _, _ ->
+        {:ok, order}
       end
     end
 
