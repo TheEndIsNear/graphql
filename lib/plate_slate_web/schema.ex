@@ -9,7 +9,17 @@
 defmodule PlateSlateWeb.Schema do
   use Absinthe.Schema
 
+  alias PlateSlateWeb.Schema.Middleware.ChangesetErrors
+
   import_types __MODULE__.MenuTypes
+
+  def middleware(middleware, _field, %{identifier: :mutation}) do
+    middleware ++ [ChangesetErrors]
+  end
+
+  def middleware(middleware, _field, _object) do
+    middleware
+  end
 
   query do
     import_fields :menu_queries
